@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>我的股票投资网页</title>
+<object data="top.html" width=100% height=120> </object>
+<object data="calendar.html" align='right' width=20% height=500 hspace=200px> </object>
+<object data="stockQuery.html" width=100% height=300> </object>
+<!--link rel="stylesheet" type="text/css" href="../static/head.css"-->
+</head>
+<body>
+	<div class="top">
+	<meta charset="utf-8">
+	<title>top</title>
+	<link rel="stylesheet" type="text/css" href="../static/head.css">
+	<p><strong>我的第一个股票投资自动化页面<strong></p>
+	</div>
+	<div class="calendar">
+	<link rel="stylesheet" type="text/css" href="../static/calendar.css">
+	<div class="header">
+		<a data-action="prev-month" href="javascript:void(0)" title="Previous Month"><i></i></a>
+		<div class="text" data-render="month-year"></div>
+		<a data-action="next-month" href="javascript:void(0)" title="Next Month"><i></i></a>
+	</div>
+	<div class="months" data-flow="left">
+		<div class="month month-a">
+			<div class="render render-a"></div>
+		</div>
+		<div class="month month-b">
+			<div class="render render-b"></div>
+		</div>
+	</div>
+	</div>
+	<script  src="../static/index.js"></script>
+	<div class="stockQuery">
+	<meta charset="utf-8">
+	<title>stockQuery</title>
+	<link rel="stylesheet" type="text/css" href="../static/stock.css">
+	<p><strong>第一个功能：查询指定股票的信息<strong></p>
+	<hr />
+	<li>插入一个表单</li>
+	<br />
+	<form action="#" method="get|post">
+	请输入起始日期： <input type="date" name="start_time" value="2015-09-24" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	请输入终止日期： <input type="date" name="end_time" value="2015-09-24" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	请输入股票代码： <input type="text" name="stock_code" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type="submit" value="Submit" />
+	</form>
+	</div>
+</body>
+</html>
