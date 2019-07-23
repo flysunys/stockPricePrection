@@ -2,12 +2,23 @@ from flask import Flask,render_template, request
 import pymysql
 import pandas_datareader.data as web
 import datetime
+from os import path as pth
+p=pth.split(pth.realpath('G:\gitdir\gitprojects\stockPricePrection\stockWeb\DButils\dbstock.py'))[0]
+pth.sys.path.append(p)
+#sys.path.append('G:\gitdir\gitprojects\stockPricePrection\stockWeb\DButils\dbstock.py')
+from dbstock import DBStock
 app=Flask(__name__)
 
 @app.route('/',methods=['GET','POST'])
 def index():
 	if request.method == "GET":
 		print(request.args.get('start_time'))
+		table_name="StockDataBackup"
+		if DBStock.exit_of_table(table_name):
+			print("存在此表")
+		else:
+			print("不存在此表")
+			DBStock.establishTable()
 		return render_template("index_bak.html")
 	if request.method == "POST":
 		#print(request.form.get("start_time"))
