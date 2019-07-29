@@ -44,7 +44,7 @@ def index():
 		else:
 			print("不存在此表")
 			DBStock.establishTable()
-		return render_template("index_bak.html")
+		return render_template("index_start.html")
 	if request.method == "POST":
 		#print(request.form.get("start_time"))
 		#request_info = request.values.to_dict();
@@ -67,19 +67,30 @@ def index():
 		#stock_data_ss=web.DataReader(stockcode + '.SS','yahoo',date_starttime,date_endtime)
 		#insertalltotable(stock_data_ss,stockcode)
 		list_query_data=[]
+		list_date=[]
+		list_high=[]
+		list_low=[]
+		list_open=[]
+		list_close=[]
 		for date_day in dateRange(starttime,endtime):
 			print(date_day)
 			result_query=DBStock.query_of_table(date_day,stockcode)
 			if DBStock.query_of_table(date_day,stockcode):
 				print("exit %s %s" % (date_day,stockcode))
 				list_query_data.append(result_query[0])
+				list_date.append(datetime.datetime.strftime(result_query[0][0], "%Y-%m-%d"))
+				list_high.append(result_query[0][2])
+				list_low.append(result_query[0][3])
+				list_open.append(result_query[0][4])
+				list_close.append(result_query[0][5])
 			else:
 				print("not exit %s %s" % (date_day,stockcode))
 			
 				
 		print(starttime,endtime,stockcode)
+		print(list_date,list_high,list_low,list_open,list_close)
 		
-		return render_template("index_bak.html",list_query_data=list_query_data)
+		return render_template("index_bak.html",list_query_data=list_query_data,list_date=list_date,list_high=list_high,list_low=list_low,list_open=list_open,list_close=list_close)
 	return "请重新编写路由"
 if __name__ == '__main__':
 	app.run(debug=True)
