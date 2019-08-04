@@ -8,7 +8,7 @@ import matplotlib.pyplot as plf
 from matplotlib.pyplot import MultipleLocator
 
 
-result=ts.get_hist_data('601009',start='2019-01-18',end='2019-07-31')
+result=ts.get_hist_data('601009',start='2016-01-18',end='2019-08-02')
 #print(result['close'].values)
 close_list=result['close'].values
 date_list=result.index.values
