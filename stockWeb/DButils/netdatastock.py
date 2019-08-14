@@ -59,6 +59,17 @@ class DBDataNet:
 		cursor.close()
 		conn.close()
 		return result
+	def query_table_code(stockcode):
+		conn = pymysql.connect(host="localhost",user="root",password="1234",database="test",charset="utf8")
+		cursor=conn.cursor()
+		sql="SELECT * FROM `NetDataStock` WHERE `StockCode` = %s"
+
+		cursor.execute(sql,(stockcode))
+		conn.commit()
+		result = cursor.fetchall()
+		cursor.close()
+		conn.close()
+		return result
 	def query_for_table(param):
 		conn = pymysql.connect(host="localhost",user="root",password="1234",database="test",charset="utf8")
 		cursor=conn.cursor()
