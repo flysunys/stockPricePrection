@@ -2,17 +2,25 @@
 
 import tushare as ts
 import datetime
-import time
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plf
 from matplotlib.pyplot import MultipleLocator
-#from os import path as pth
-#p=pth.split(pth.realpath('G:\gitdir\gitprojects\stockPricePrection\stockWeb\DButils\netdatastock.py'))[0]
-#pth.sys.path.append(p)
 import sys
 sys.path.append(r'G:\gitdir\gitprojects\stockPricePrection\stockWeb\DButils')
 from netdatastock import DBDataNet
+
+def normalize_data(data):
+	mean_data=np.mean(data)
+	max_data=max(data)
+	min_data=min(data)
+	return [(float(i)-mean_data)/(max_data-min_data) for i in data]
+
+def relu(x):
+	return np.maximum(0,x)
+	
+def relu_gradient(x):
+	return 1*(x>0)
 
 def sigmoid(x):
 	return 1/(1+np.exp(-x))
@@ -22,55 +30,22 @@ def sigmoid_derivative(x):
 
 def prediction(inputs,weights):
 	inputs=inputs.astype(float)
-	outputs=sigmoid(np.dot(inputs,weights))
+	#outputs=sigmoid(np.dot(inputs,weights))
+	outputs=relu(np.dot(inputs,weights))
 	return outputs
 
-def train(train_inputs,train_outputs,weights,iterations):
+def train(train_inputs,train_outputs,weights,iterations,alpha):
 	for iter in range(iterations):
 		outputs=prediction(train_inputs,weights)
 		error=train_outputs-outputs
-		adjusts=np.dot(train_inputs.T,np.dot(error,sigmoid_derivative(outputs)))
+		#print(error)
+		#print(outputs)
+		#adjusts=np.dot(train_inputs.T,alpha*error*sigmoid_derivative(outputs))
+		adjusts=np.dot(train_inputs.T,alpha*error*relu_gradient(outputs))
+		#print(adjusts)
 		weights+=adjusts
 	return weights
 
-def insertalltotable(stock,stock_code):
-	#print(stock['close'].values[1:])
-	labelnum_a=stock['close'].values
-	labelnum_b=labelnum_a[:-1]
-	labelnum_c=labelnum_b.tolist()
-	labelnum_c.insert(0,3.3)
-	#print(labelnum_c)
-	#print(type(labelnum_b.tolist()))
-	#labelnum_c=[0,labelnum_b]
-	for x1,x2,x3,x4,x5,x6,x7,x8 in zip(stock.index,stock['high'].values,stock['low'].values,stock['open'].values,stock['close'].values,stock['volume'].values,stock['p_change'].values,labelnum_c):
-		if DBDataNet.query_of_table(x1,stock_code):
-			print("exit each_day in stockDB")
-		else:
-			print("not exit each_day in stockDB")
-			stockdate=x1
-			stockcode=stock_code
-			stockhigh=float(round(x2,2))
-			stocklow=float(round(x3,2))
-			stockopen=float(round(x4,2))
-			stockclose=float(round(x5,2))
-			stockvolume=float(round(x6,2))
-			stockadj=float(round(x7,2))
-			label=x8
-			print(type(x8))
-			#print(type(stockdate))
-			#print(type(stockhigh))
-			#print(stockdate,stockcode,stockhigh,stocklow,stockopen,stockclose,stockvolume,stockadj)
-			DBDataNet.insert_of_table(stockdate,stockcode,stockhigh,stocklow,stockopen,stockclose,stockvolume,stockadj,label)
-
-table_name="netdatastock"
-if DBDataNet.exit_of_table(table_name):
-	print("存在此表")
-else:
-	print("不存在此表")
-	DBDataNet.establishTable()
-
-#print([[1,1],[2,2],[3,3]])
-#df = ts.shibor_ma_data()
 stockcode='601668'
 start_str='2017-06-08'
 end_str='2019-08-09'
@@ -110,30 +85,42 @@ for each_record_data in recordData[:-1]:
 	label_data=each_record_data[8]
 	result_list.append(label_data)
 training_inputs = np.array(record_list)
-training_outputs = np.array(result_list).T
+training_output=[]
+training_output.append(result_list)
+training_outputs = np.array(training_output).T
 np.random.seed(1)
-weights = 2 * np.random.random((6,1)) - 1
+weights = 6 * np.random.random((6,1))
+iterations=10
+alpha=0.001
 #print(training_inputs)
-#print(training_outputs)
-iterations=1000
-weights_res=train(training_inputs,training_outputs,weights,iterations)
+#print(np.shape(training_inputs))
+#print(np.shape(weights))
+#print(np.shape(training_outputs))
+weights_res=train(training_inputs,training_outputs,weights,iterations,alpha)
+#print(weights_res)
+#test_predic=prediction(training_inputs,weights)
+#test_predic=np.dot(training_inputs,weights)
+#print(test_predic)
+#print(weights)
 #print(weights_res[0][0])
 #weight_d=[]
-weight_dev=[weights_res[0][0],weights_res[1][0],weights_res[2][0],weights_res[3][0],weights_res[4][0],weights_res[5][0]]
+#weight_dev=[weights_res[0][0],weights_res[1][0],weights_res[2][0],weights_res[3][0],weights_res[4][0],weights_res[5][0]]
 #weight_d.append(weight_dev)
 #print(np.array(weight_d))
 
 
 input_num=[]
+input_nums=[]
 input_num.append(recordData[-1][2])
 input_num.append(recordData[-1][3])
 input_num.append(recordData[-1][4])
 input_num.append(recordData[-1][5])
 input_num.append(recordData[-1][6])
 input_num.append(recordData[-1][7])
+input_nums.append(input_num)
 input_num=np.array(input_num)
-print(input_num)
-result_predic=np.dot(input_num,weights_res)
+#print(np.shape(input_nums))
+result_predic=np.dot(input_nums,weights_res)
 print(result_predic)
 #print(np.dot())
 #print(close_price_list[:-1])
