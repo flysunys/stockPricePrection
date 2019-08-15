@@ -16,6 +16,13 @@ def normalize_data(data):
 	min_data=min(data)
 	return [(float(i)-mean_data)/(max_data-min_data) for i in data]
 
+	
+def leakrelu(x,a):
+	return np.maximum(0,x)+(x<0)*a*x
+
+def leakrelu_gradient(x,a):
+	return 1*(x>0)+(x<0)*a	
+	
 def relu(x):
 	return np.maximum(0,x)
 	
@@ -31,7 +38,8 @@ def sigmoid_derivative(x):
 def prediction(inputs,weights):
 	inputs=inputs.astype(float)
 	#outputs=sigmoid(np.dot(inputs,weights))
-	outputs=relu(np.dot(inputs,weights))
+	#outputs=relu(np.dot(inputs,weights))
+	outputs=leakrelu(np.dot(inputs,weights),0.001)
 	return outputs
 
 def train(train_inputs,train_outputs,weights,iterations,alpha):
@@ -41,8 +49,9 @@ def train(train_inputs,train_outputs,weights,iterations,alpha):
 		#print(error)
 		#print(outputs)
 		#adjusts=np.dot(train_inputs.T,alpha*error*sigmoid_derivative(outputs))
-		adjusts=np.dot(train_inputs.T,alpha*error*relu_gradient(outputs))
-		#print(adjusts)
+		#adjusts=np.dot(train_inputs.T,alpha*error*relu_gradient(outputs))
+		adjusts=np.dot(train_inputs.T,alpha*error*leakrelu_gradient(outputs,0.001))
+		print(adjusts)
 		weights+=adjusts
 	return weights
 
@@ -89,9 +98,9 @@ training_output=[]
 training_output.append(result_list)
 training_outputs = np.array(training_output).T
 np.random.seed(1)
-weights = 6 * np.random.random((6,1))
+weights = 0.002 * np.random.random((6,1))
 iterations=10
-alpha=0.001
+alpha=0.00000001
 #print(training_inputs)
 #print(np.shape(training_inputs))
 #print(np.shape(weights))
