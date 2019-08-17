@@ -12,6 +12,29 @@ from netdatastock import DBDataNet
 
 #函数定义
 
+def array_oneTotwo(x_array):
+	t=np.empty((x_array.shape[0],1))
+	for i in range(x_array.shape[0]):
+		t[i,:]=x_array[i]
+	return t
+	
+#def array_twoToone(x_array):
+#	t=np.empty((max(x_array.shape),))
+#	for i in range(x_array.shape[0]):
+#		t[i]=x_array[i]
+#	return t
+
+def maxminnorm(array):
+	maxcols=array.max(axis=0)
+	mincols=array.min(axis=0)
+	data_shape = array.shape
+	data_rows = data_shape[0]
+	data_cols = data_shape[1]
+	t=np.empty((data_rows,data_cols))
+	for i in range(data_cols):
+		t[:,i]=(array[:,i]-mincols[i])/(maxcols[i]-mincols[i])
+	return t
+
 def normalize_data(data):
 	mean_data=np.mean(data)
 	max_data=max(data)
@@ -37,24 +60,34 @@ def sigmoid(x):
 def sigmoid_derivative(x):
 	return x*(1-x)
 
-def prediction(inputs,weights):
-	inputs=inputs.astype(float)
+def prediction(input_t,weight_t):
+	input_t=input_t.astype(float)
 	#outputs=sigmoid(np.dot(inputs,weights))
 	#outputs=relu(np.dot(inputs,weights))
-	outputs=leakrelu(np.dot(inputs,weights),0.0001)
-	return outputs
+	output_t=leakrelu(np.dot(input_t,weight_t),0.0001)
+	return output_t
 
 def train(train_inputs,train_outputs,weights,iterations,alpha):
 	for iter in range(iterations):
-		outputs=prediction(train_inputs,weights)
-		error=train_outputs-outputs
-		#print(error)
+		#forwad propagation
+		outputs_one=prediction(train_inputs,weights[0])
+		#print(outputs_one)
+		outputs_two=prediction(outputs_one,weights[1])
+		print(outputs_two)
+		#backward propagation
+		error_two=outputs_two-train_outputs
+		weights_derivative_two=np.dot(outputs_one.T,alpha[0]*error_two)/train_outputs.size
+		error_one=np.dot(error_two,weights[1].T)*leakrelu_gradient(np.dot(train_inputs,weights[0]),0.0001)
+		weights_derivative_one=np.dot(train_inputs.T,alpha[1]*error_one)/train_outputs.size
+		print("weights_derivative_two: %s" % weights_derivative_two)
+		print("weights_derivative_one: %s" % weights_derivative_one)
 		#print(outputs)
 		#adjusts=np.dot(train_inputs.T,alpha*error*sigmoid_derivative(outputs))
 		#adjusts=np.dot(train_inputs.T,alpha*error*relu_gradient(outputs))
-		adjusts=np.dot(train_inputs.T,alpha*error*leakrelu_gradient(outputs,0.0001))
-		print(adjusts)
-		weights+=adjusts
+		#adjusts=np.dot(train_inputs.T,alpha*error*leakrelu_gradient(outputs,0.0001))
+		#print(adjusts)
+		weights[0]-=weights_derivative_one
+		weights[1]-=weights_derivative_two
 	return weights
 
 	
@@ -98,17 +131,36 @@ for each_record_data in recordData[:-1]:
 	label_data=each_record_data[8]
 	result_list.append(label_data)
 training_inputs = np.array(record_list)
+
+# normalize inputs
+
+training_inputs=maxminnorm(training_inputs)
 training_output=[]
 training_output.append(result_list)
 training_outputs = np.array(training_output).T
 
+# normalize outputs
+
+training_outputs=maxminnorm(training_outputs)
+#print(training_inputs.shape)
+
 #参数定义,设计一层隐藏层神经元，个数为8，输入层神经元个数是6，输出层神经元个数是1，6*8*1   得出两个权值矩阵6*8  和8*1
 #每层的激活函数都设置为leak_relu
 np.random.seed(1)
-weights_one = 0.2 * np.random.random((6,8))
-weights_two = 0.5 * np.random.random((8,1))
-iterations=10000
-alpha=0.00000001
+weights=[]
+weights_one = 2 * np.random.random((6,8))
+weights_two = 5 * np.random.random((8,1))
+weights.append(weights_one)
+weights.append(weights_two)
+
+iterations=1000
+alpha=[]
+alpha_one=0.001
+alpha_two=0.0002
+alpha.append(alpha_one)
+alpha.append(alpha_two)
+
+#print(leakrelu(training_outputs,0.1))
 #print(training_inputs)
 #print(np.shape(training_inputs))
 #print(np.shape(weights))
@@ -116,6 +168,8 @@ alpha=0.00000001
 
 #开始训练
 weights_res=train(training_inputs,training_outputs,weights,iterations,alpha)
+
+print(weights_res)
 #print(weights_res)
 #test_predic=prediction(training_inputs,weights)
 #test_predic=np.dot(training_inputs,weights)
@@ -137,9 +191,30 @@ input_num.append(recordData[-1][5])
 input_num.append(recordData[-1][6])
 input_num.append(recordData[-1][7])
 input_nums.append(input_num)
-input_num=np.array(input_num)
-#print(np.shape(input_nums))
-result_predic=np.dot(input_nums,weights_res)
+input_nums=np.array(input_num)
+
+#normalize_data(recordData[:,2])
+#print(type(recordData))
+
+mean_d=training_inputs.mean(axis=0)
+max_d=training_inputs.max(axis=0)
+min_d=training_inputs.min(axis=0)
+#mean_t=array_oneTotwo(mean_d)
+#max_t=array_oneTotwo(max_d)
+#min_t=array_oneTotwo(min_d)
+#print(array_oneTotwo(mean_d))
+#print(mean_d.shape)
+#print(np.shape(training_inputs))
+#input_nums.reshape(-1)
+
+input_nums_normalize=(input_nums-mean_d)/(max_d-min_d)
+#print(input_nums_normalize)
+#print(mean_d)
+#print(max_d)
+#print(min_d)
+input_nums_normalize.reshape(1,6)
+
+result_predic=np.dot(np.dot(input_nums_normalize,weights_res[0]),weights_res[1])
 
 
 #输出预测结果
