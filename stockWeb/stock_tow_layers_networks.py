@@ -10,6 +10,8 @@ import sys
 sys.path.append(r'G:\gitdir\gitprojects\stockPricePrection\stockWeb\DButils')
 from netdatastock import DBDataNet
 
+#函数定义
+
 def normalize_data(data):
 	mean_data=np.mean(data)
 	max_data=max(data)
@@ -55,6 +57,8 @@ def train(train_inputs,train_outputs,weights,iterations,alpha):
 		weights+=adjusts
 	return weights
 
+	
+#数据获取
 stockcode='601668'
 start_str='2017-06-08'
 end_str='2019-08-09'
@@ -97,14 +101,20 @@ training_inputs = np.array(record_list)
 training_output=[]
 training_output.append(result_list)
 training_outputs = np.array(training_output).T
+
+#参数定义,设计一层隐藏层神经元，个数为8，输入层神经元个数是6，输出层神经元个数是1，6*8*1   得出两个权值矩阵6*8  和8*1
+#每层的激活函数都设置为leak_relu
 np.random.seed(1)
-weights = 0.0002 * np.random.random((6,1))
+weights_one = 0.2 * np.random.random((6,8))
+weights_two = 0.5 * np.random.random((8,1))
 iterations=10000
 alpha=0.00000001
 #print(training_inputs)
 #print(np.shape(training_inputs))
 #print(np.shape(weights))
 #print(np.shape(training_outputs))
+
+#开始训练
 weights_res=train(training_inputs,training_outputs,weights,iterations,alpha)
 #print(weights_res)
 #test_predic=prediction(training_inputs,weights)
@@ -117,7 +127,7 @@ weights_res=train(training_inputs,training_outputs,weights,iterations,alpha)
 #weight_d.append(weight_dev)
 #print(np.array(weight_d))
 
-
+#使用训练的模型进行预测
 input_num=[]
 input_nums=[]
 input_num.append(recordData[-1][2])
@@ -130,6 +140,9 @@ input_nums.append(input_num)
 input_num=np.array(input_num)
 #print(np.shape(input_nums))
 result_predic=np.dot(input_nums,weights_res)
+
+
+#输出预测结果
 print(result_predic)
 #print(np.dot())
 #print(close_price_list[:-1])
