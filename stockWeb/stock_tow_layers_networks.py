@@ -130,18 +130,18 @@ for each_record_data in recordData[:-1]:
 	record_list.append(temp_list)
 	label_data=each_record_data[8]
 	result_list.append(label_data)
-training_inputs = np.array(record_list)
+training_inputs_d = np.array(record_list)
 
 # normalize inputs
 
-training_inputs=maxminnorm(training_inputs)
+training_inputs=maxminnorm(training_inputs_d)
 training_output=[]
 training_output.append(result_list)
-training_outputs = np.array(training_output).T
+training_outputs_d = np.array(training_output).T
 
 # normalize outputs
 
-training_outputs=maxminnorm(training_outputs)
+training_outputs=maxminnorm(training_outputs_d)
 #print(training_inputs.shape)
 
 #参数定义,设计一层隐藏层神经元，个数为8，输入层神经元个数是6，输出层神经元个数是1，6*8*1   得出两个权值矩阵6*8  和8*1
@@ -153,10 +153,10 @@ weights_two = 5 * np.random.random((8,1))
 weights.append(weights_one)
 weights.append(weights_two)
 
-iterations=1000
+iterations=10000
 alpha=[]
 alpha_one=0.001
-alpha_two=0.0002
+alpha_two=0.002
 alpha.append(alpha_one)
 alpha.append(alpha_two)
 
@@ -196,9 +196,12 @@ input_nums=np.array(input_num)
 #normalize_data(recordData[:,2])
 #print(type(recordData))
 
-mean_d=training_inputs.mean(axis=0)
-max_d=training_inputs.max(axis=0)
-min_d=training_inputs.min(axis=0)
+mean_d=training_inputs_d.mean(axis=0)
+max_d=training_inputs_d.max(axis=0)
+min_d=training_inputs_d.min(axis=0)
+
+print(max_d)
+print(min_d)
 #mean_t=array_oneTotwo(mean_d)
 #max_t=array_oneTotwo(max_d)
 #min_t=array_oneTotwo(min_d)
@@ -208,7 +211,7 @@ min_d=training_inputs.min(axis=0)
 #input_nums.reshape(-1)
 
 input_nums_normalize=(input_nums-mean_d)/(max_d-min_d)
-#print(input_nums_normalize)
+print(input_nums_normalize)
 #print(mean_d)
 #print(max_d)
 #print(min_d)
@@ -219,6 +222,7 @@ result_predic=np.dot(np.dot(input_nums_normalize,weights_res[0]),weights_res[1])
 
 #输出预测结果
 print(result_predic)
+print(result_predic*(training_outputs_d.max(axis=0)-training_outputs_d.min(axis=0))+training_outputs_d.mean(axis=0))
 #print(np.dot())
 #print(close_price_list[:-1])
 #print(type(1.1))
