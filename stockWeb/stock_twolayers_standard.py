@@ -230,13 +230,16 @@ print(result_predic)
 
 #x_data=np.linspace(0,1,num=y_estimates.shape[1])
 y1_data=y_estimates[:,0]
+y11_data=y1_data*(training_outputs_d.max(axis=0)-training_outputs_d.min(axis=0))+training_outputs_d.mean(axis=0)
 y2_data=valid_data_output[:,0]
+y21_data=y2_data*(training_outputs_d.max(axis=0)-training_outputs_d.min(axis=0))+training_outputs_d.mean(axis=0)
 error_estimastes_data=(y_estimates-valid_data_output)
 y3_data=error_estimastes_data[:,0]
+y31_data=(y11_data-y21_data)
 
-plf.plot(y1_data,'-r')
-plf.plot(y2_data,'-b')
-plf.plot(y3_data,'-g')
+plf.plot(y11_data,'-r')
+plf.plot(y21_data,'-b')
+plf.plot(y31_data,'-g')
 plf.legend(labels=['y_estimastes','y_realvalues','error_values'])
 
 plf.show()
