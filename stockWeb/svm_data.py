@@ -31,9 +31,9 @@ l_data=x1_data
 
 #参数设置
 
-sigma=6
+sigma=0.3
 
-theta=np.empty((x1_data.size+1))+1.2
+theta=np.empty((x1_data.size+1))+1.3
 
 theta[0]=1
 
@@ -41,9 +41,9 @@ c_para=1.0/x1_data.size
 
 J_cost=6
 
-threshold=0.8
+threshold=0.3
 
-alpha=0.2    #学习率
+alpha=0.5   #学习率
 
 #开始计算costfunction and 使用梯度下降收敛参数
 
@@ -61,7 +61,7 @@ while J_cost > threshold:
 		#print(each_data_cal)
 		theta_temp[i+1]-=(alpha*c_para*x1_data[i]*((np.sum(theta*f)<1)*y1_data[i]+(np.sum(theta*f)>-1)*(1-y1_data[i]))+theta[i+1])
 		J_cost+=each_data_cal
-	J_cost=c_para*J_cost+theta[1:].sum()/2.0
+	J_cost=c_para*J_cost+np.sum(np.square(theta[1:]))/2.0
 	theta=theta-theta_temp
 	print(J_cost)
 	print(theta)
