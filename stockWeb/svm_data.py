@@ -59,7 +59,7 @@ while J_cost > threshold:
 		#print(f)
 		each_data_cal=y1_data[i]*cost_function_one(np.sum(theta*f))+cost_function_zero(np.sum(theta*f))*(1-y1_data[i])
 		#print(each_data_cal)
-		theta_temp[i+1]-=(alpha*c_para*x1_data[i]*((np.sum(theta*f)<1)*y1_data[i]+(np.sum(theta*f)>-1)*(1-y1_data[i]))+theta[i+1])
+		theta_temp[i+1]=(alpha*c_para*f[i]*((np.sum(theta*f)<1)*y1_data[i]+(np.sum(theta*f)>-1)*(1-y1_data[i]))+theta[i+1])
 		J_cost+=each_data_cal
 	J_cost=c_para*J_cost+np.sum(np.square(theta[1:]))/2.0
 	theta=theta-theta_temp
