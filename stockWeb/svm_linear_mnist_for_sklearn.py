@@ -40,9 +40,10 @@ class svm_linear():
 		svm_model.fit(X,Y)
 		w=svm_model.coef_
 		b=svm_model.intercept_
+		print(w,b)
 		x_test=np.linspace(0,20,num=20)
 		plf.scatter(x_data,y_data)
-		plf.plot(x_test,w[0]*x_test+b[0])
+		plf.plot(x_test,(-w[0,0]*x_test-b[0])/w[0,1])
 		plf.show()
 	
 	
@@ -63,13 +64,20 @@ if __name__=='__main__':
 	
 	#print(X)
 	Y=np.array(df_one['petal width'].values)
-	X_three=np.insert(X,1,Y,axis=1)
+	X_three=np.insert(X_two,1,Y,axis=1)
 	print(X_three)
 	Y_two=np.empty((X_one.shape[0],1))
 	for i in range(X_one.shape[0]):
 		Y_two[i,:]=Y[i]
+	Y_three=np.empty((X_one.shape[0],1))
+	for i in range(X_one.shape[0]):
+		if X_one[i] < 2.5:
+			Y_three[i,:]=-1
+		else:
+			Y_three[i,:]=1
+	print(Y_three)
 	svm_one.linear_fit(X_one,Y,X,Y)
-	svm_one.svm_linear_fit(X_one,Y,X_two,Y_two)
+	svm_one.svm_linear_fit(X_one,Y,X_three,Y_three)
 	#print(X.shape)
 	#reg=linear_model.LinearRegression()
 	#reg.fit(X,Y)
