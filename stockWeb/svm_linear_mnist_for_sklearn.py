@@ -19,7 +19,7 @@ class svm_linear():
 		with open('./data/iris.data','w') as f:
 			f.write(r_data.text)
 		df=pd.read_csv('./data/iris.data',names=['sepal length','sepal width','petal length','petal width','class'])
-		return df
+		return df 
 	def figure_plot(self,data):
 		plf.plot(data)
 		plf.show()
