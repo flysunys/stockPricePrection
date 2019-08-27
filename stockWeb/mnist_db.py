@@ -94,6 +94,18 @@ class mnist_data():
 			each_temp.append(each_data[5])
 			data_all_csv.append(each_temp)
 		return np.array(data_all_csv)
+	def db_to_np_class(self,data_class):
+		data_all_class=self.query_by_class(data_class)
+		data_all_csv_class=[]
+		for each_data in data_all_class:
+			each_temp=[]
+			each_temp.append(each_data[1])
+			each_temp.append(each_data[2])
+			each_temp.append(each_data[3])
+			each_temp.append(each_data[4])
+			each_temp.append(each_data[5])
+			data_all_csv_class.append(each_temp)
+		return np.array(data_all_csv_class)
 		
 	def figure_scatter(self,x_data,y_data):
 		plf.scatter(x_data,y_data)
