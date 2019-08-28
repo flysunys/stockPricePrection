@@ -16,6 +16,11 @@ class perceptron_data():
 	def __init__(self):
 		self.c=0.01
 		self.alpha=0.2
+	def array_oneTotwo(self,x_array):
+		t=np.empty((x_array.shape[0],1))
+		for i in range(x_array.shape[0]):
+			t[i,:]=x_array[i]
+		return t
 	def figure_plot(self,data):
 		plf.plot(data)
 		plf.show()
@@ -24,20 +29,25 @@ class perceptron_data():
 		plf.show()
 	def perceptron_fit_normal(self,x_data,y_data,X,Y,iters,alpha):
 		#set paramter
-		theta=3*np.random.random((X.shape[1]+1,1))
+		theta=6*np.random.random((X.shape[1]+1,1))
 		ones_data=np.zeros(X.shape[0])+1
 		X=np.insert(X,0,ones_data,axis=1)
+		#print(X)
 		#print(type(X[1,1]))
+		#print(X.shape,Y.shape)
 		for i in range(iters):
 			Y_estimates=np.dot(X,theta)
+			#print(Y_estimates*Y)
 			idx=np.where(Y_estimates*Y<0)
 			if len(idx)==0:
 				print("全部分类正确")
 				return theta
-			print(idx)
-			cost_per=-np.sum(Y_estimates[idx]*Y[idx])
-			grand_w=-np.dot(X[idx].T,Y[idx])
-			theta=theta+alpha*grand_w
+			#print(idx)
+			#print(Y_estimates[idx],Y[idx])
+			#print(X[idx[0],:],Y[idx[0],:])
+			cost_per=-np.sum(Y_estimates[idx[0],:]*Y[idx[0],:])
+			grand_w=-np.dot(X[idx[0],:].T,Y[idx[0],:])
+			theta=theta-alpha*grand_w
 		coef_data=theta
 		x_test=np.linspace(0,20,num=20)
 		plf.scatter(x_data,y_data)
@@ -78,29 +88,13 @@ if __name__=='__main__':
 	#np_data_two=np_data_two.astype('float')
 	########instance to object 
 	instance_one=perceptron_data()
-	instance_one.perceptron_fit_normal(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],np_data_two[:,2],1000,0.2)
-	instance_one.figure_scatter(np_data_two[:,0],np_data_two[:,1])
+	########set paramters
+	iters=500
+	alpha=0.1
+	instance_one.perceptron_fit_normal(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],instance_one.array_oneTotwo(np_data_two[:,2]),iters,alpha)
+	#instance_one.figure_scatter(np_data_two[:,0],np_data_two[:,1])
 	########
-	X_one=np.array(df_one['petal length'].values)
-	X_two=np.empty((X_one.shape[0],1))
-	for i in range(X_one.shape[0]):
-		X_two[i,:]=X_one[i]
-	X=np.insert(X_two,0,np.zeros(X_one.shape[0])+1,axis=1)
-	Y=np.array(df_one['petal width'].values)
-	X_three=np.insert(X_two,1,Y,axis=1)
-	print(X_three)
-	Y_two=np.empty((X_one.shape[0],1))
-	for i in range(X_one.shape[0]):
-		Y_two[i,:]=Y[i]
-	Y_three=np.empty((X_one.shape[0],1))
-	for i in range(X_one.shape[0]):
-		if X_one[i] < 2.5:
-			Y_three[i,:]=-1
-		else:
-			Y_three[i,:]=1
-	print(Y_three)
-	svm_one.linear_fit(X_one,Y,X,Y)
-	svm_one.svm_linear_fit(X_one,Y,X_three,Y_three)
+	
 	
 
 
