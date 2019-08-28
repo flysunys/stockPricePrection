@@ -1,5 +1,9 @@
 #coding:utf8
 
+#author:flysun
+#date:2019-08-29
+#description:1、对于感知机原始算法，步长（或者学习率）和权值初值的设置得出的权值是大不相同的，如果权值初始值设置过大，步长太小的话，收敛太慢，对于线性明显可分的数据，初始权重的设置往往是影响最终超平面的因素
+
 import pandas as pd
 import numpy as np
 import scipy.optimize as opt
@@ -10,6 +14,7 @@ import matplotlib.pyplot as plf
 import requests
 #from mnist_db import mnist_data  #对于同一目录下调用可以如此
 from DButils.mnist_database import mnist_data  #调用子目录下的python文件，需要加目录名称
+
 
 
 class perceptron_data():
@@ -35,19 +40,22 @@ class perceptron_data():
 		#print(X)
 		#print(type(X[1,1]))
 		#print(X.shape,Y.shape)
+		count_iter=0
 		for i in range(iters):
 			Y_estimates=np.dot(X,theta)
 			#print(Y_estimates*Y)
 			idx=np.where(Y_estimates*Y<0)
-			if len(idx)==0:
+			if len(idx[0])==0:
 				print("全部分类正确")
-				return theta
+				break
 			#print(idx)
 			#print(Y_estimates[idx],Y[idx])
 			#print(X[idx[0],:],Y[idx[0],:])
+			count_iter+=1
 			cost_per=-np.sum(Y_estimates[idx[0],:]*Y[idx[0],:])
 			grand_w=-np.dot(X[idx[0],:].T,Y[idx[0],:])
 			theta=theta-alpha*grand_w
+		print("迭代总次数是：%s" % (count_iter))
 		coef_data=theta
 		x_test=np.linspace(0,20,num=20)
 		plf.scatter(x_data,y_data)
@@ -91,6 +99,7 @@ if __name__=='__main__':
 	########set paramters
 	iters=500
 	alpha=0.1
+	#如果theta初始值的斜率是正，收敛出的也是正，如果是负，收敛出的也是负，因为这个数据的可分超平面太多了，明显的线性可分
 	instance_one.perceptron_fit_normal(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],instance_one.array_oneTotwo(np_data_two[:,2]),iters,alpha)
 	#instance_one.figure_scatter(np_data_two[:,0],np_data_two[:,1])
 	########
