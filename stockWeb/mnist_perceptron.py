@@ -72,9 +72,10 @@ if __name__=='__main__':
 	df_data_one_replace=df_data_one.replace('Iris-setosa',-1)
 	df_data_two=df_data_one_replace.replace('Iris-versicolor',1)
 	########covert data to np.array
-	df_data_two = pd.DataFrame(df_data_two, dtype='float')
+	df_data_two = pd.DataFrame(df_data_two)
+	df_data_two=df_data_two.astype('float')
 	np_data_two=df_data_two.values
-	np_data_two.astype(float)
+	#np_data_two=np_data_two.astype('float')
 	########instance to object 
 	instance_one=perceptron_data()
 	instance_one.perceptron_fit_normal(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],np_data_two[:,2],1000,0.2)
