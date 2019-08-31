@@ -62,15 +62,34 @@ class perceptron_data():
 		plf.plot(x_test,(-coef_data[1,:]*x_test-coef_data[0,:])/coef_data[2,:])
 		plf.show()
 		
-	def svm_linear_fit(self,x_data,y_data,X,Y):
-		svm_model= svm.LinearSVC()
-		svm_model.fit(X,Y)
-		w=svm_model.coef_
-		b=svm_model.intercept_
-		print(w,b)
+	def perceptron_fit_pair(self,x_data,y_data,X,Y,iters,learnning_rate):
+		#set paramter
+		#alpha_r=0*np.random.random((X.shape[0],1)) #初始设置为0也可以
+		alpha_r=3.5*np.abs(np.random.random((X.shape[0],1)))
+		b=0
+		#ones_data=np.zeros(X.shape[0])+1
+		#X=np.insert(X,0,ones_data,axis=1)  #这里w和b是分开的，对初始数据不需要添加1
+		gram_marix=np.dot(X,X.T)
+		count_iter=0
+		for i in range(iters):
+			f_data=np.sum(X*alpha_r*Y,axis=0)
+			f_data_two=self.array_oneTotwo(f_data)
+			Y_estimates=np.dot(X,f_data_two)+b
+			#print(Y_estimates*Y)
+			idx=np.where(Y_estimates*Y<=0)
+			if len(idx[0])==0:
+				print("全部分类正确")
+				break
+			count_iter+=1
+			cost_per=-np.sum(Y_estimates[idx[0],:]*Y[idx[0],:])
+			alpha_r[idx[0],:]=alpha_r[idx[0],:]+learnning_rate
+			b=b+learnning_rate*np.sum(Y[idx[0],:],axis=0)
+		print("迭代总次数是：%s" % (count_iter))
+		w_data=f_data
+		b_data=b
 		x_test=np.linspace(0,20,num=20)
 		plf.scatter(x_data,y_data)
-		plf.plot(x_test,(-w[0,0]*x_test-b[0])/w[0,1])
+		plf.plot(x_test,(-w_data[0]*x_test-b_data)/w_data[1])
 		plf.show()
 	
 	
@@ -99,8 +118,12 @@ if __name__=='__main__':
 	########set paramters
 	iters=500
 	alpha=0.1
+	learningrate=1
 	#如果theta初始值的斜率是正，收敛出的也是正，如果是负，收敛出的也是负，因为这个数据的可分超平面太多了，明显的线性可分
-	instance_one.perceptron_fit_normal(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],instance_one.array_oneTotwo(np_data_two[:,2]),iters,alpha)
+	#普通感知机进行训练
+	#instance_one.perceptron_fit_normal(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],instance_one.array_oneTotwo(np_data_two[:,2]),iters,alpha)
+	#使用对偶形式的感知机进行训练
+	instance_one.perceptron_fit_pair(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],instance_one.array_oneTotwo(np_data_two[:,2]),iters,learningrate)
 	#instance_one.figure_scatter(np_data_two[:,0],np_data_two[:,1])
 	########
 	
