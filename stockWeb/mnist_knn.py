@@ -17,6 +17,23 @@ from DButils.mnist_database import mnist_data  #调用子目录下的python文�
 
 
 
+class Node():
+	def __init__(self,data,lchild=None,rchild=None):
+		self.data=data
+		self.lchild=lchild
+		self.rchild=rchild
+	def create_tree(self,dataset,depth):
+		if (len(dataset)>0):
+			m,n=np.shape(dataset)
+			median_index=m//2
+			axis_data=depth%n
+			sort_dataset=dataset(np.argsort(dataset[:,axis_data]))
+			node = Node(sort_dataset[median_index])
+			
+
+
+
+
 class knn_data():
 	def __init__(self):
 		self.k=3
@@ -33,6 +50,12 @@ class knn_data():
 		plf.scatter(x_data,y_data)
 		plf.show()
 	def knn_normal(self,X,Y,test):
+		"""
+		普通的knn算法，直接计算预测点和所有点的欧式距离；
+		按距离排序，选出距离最小的k个值对应的类；
+		使用投票的方式，从k个值选出出现次数最多的类；
+		该类就是预测点的所属类
+		"""
 		#set paramter
 		test_r=np.square(X-test)
 		#p=2,so this distance is ER diatance
@@ -50,11 +73,8 @@ class knn_data():
 		#test_1_count=test_k_np.count(1)
 		#test_2_count=test_k_np.count(2)
 		#print(test_0_count,test_1_count,test_2_count)
-		
-		
-		
-		
-	def knn_kd_tree(self,x_data,y_data,X,Y,iters,learnning_rate):
+			
+	def knn_kd_tree_balance(self,x_data,y_data,X,Y,iters,learnning_rate):
 		#set paramter
 		#alpha_r=0*np.random.random((X.shape[0],1)) #初始设置为0也可以
 		alpha_r=3.5*np.abs(np.random.random((X.shape[0],1)))
@@ -113,10 +133,7 @@ if __name__=='__main__':
 	instance_one=knn_data()
 	########set paramters
 	test_data=np.array([[3,4,5,1]])
-	#如果theta初始值的斜率是正，收敛出的也是正，如果是负，收敛出的也是负，因为这个数据的可分超平面太多了，明显的线性可分
-	#普通感知机进行训练
-	#instance_one.perceptron_fit_normal(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],instance_one.array_oneTotwo(np_data_two[:,2]),iters,alpha)
-	#使用对偶形式的感知机进行训练
+	#使用测试数据测试普通的knn算法
 	test_kind=instance_one.knn_normal(np_data_three[:,0:4],instance_one.array_oneTotwo(np_data_three[:,4]),test_data)
 	print(test_kind)
 	#instance_one.figure_scatter(np_data_two[:,0],np_data_two[:,1])
