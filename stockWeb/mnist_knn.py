@@ -18,17 +18,23 @@ from DButils.mnist_database import mnist_data  #调用子目录下的python文�
 
 
 class Node():
-	def __init__(self,data,lchild=None,rchild=None):
+	def __init__(self,data,lchild=None,rchild=None,depth=0):
 		self.data=data
 		self.lchild=lchild
 		self.rchild=rchild
+		self.depth=depth
 	def create_tree(self,dataset,depth):
 		if (len(dataset)>0):
 			m,n=np.shape(dataset)
 			median_index=m//2
 			axis_data=depth%n
-			sort_dataset=dataset(np.argsort(dataset[:,axis_data]))
-			node = Node(sort_dataset[median_index])
+			sort_dataset=dataset[np.argsort(dataset[:,axis_data]),:]
+			self.data = sort_dataset[median_index,:]
+			self.rchild=self.create_tree(sort_dataset[0:median_index,:],depth=depth+1)
+			self.rchild=self.create_tree(sort_dataset[median_index+1:,:],depth=depth+1)
+			return self
+		else:
+			return None
 			
 
 
