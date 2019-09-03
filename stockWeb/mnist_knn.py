@@ -30,6 +30,8 @@ class Node():
 			axis_data=depth%n
 			sort_dataset=dataset[np.argsort(dataset[:,axis_data]),:]
 			self.data = sort_dataset[median_index,:]
+			self.depth=depth
+			print(self.data,self.depth)
 			self.rchild=self.create_tree(sort_dataset[0:median_index,:],depth=depth+1)
 			self.rchild=self.create_tree(sort_dataset[median_index+1:,:],depth=depth+1)
 			return self
@@ -142,6 +144,10 @@ if __name__=='__main__':
 	#使用测试数据测试普通的knn算法
 	test_kind=instance_one.knn_normal(np_data_three[:,0:4],instance_one.array_oneTotwo(np_data_three[:,4]),test_data)
 	print(test_kind)
+	instance_two=Node(-1)
+	tree_two=instance_two.create_tree(np_data_three[:,0:4],0)
+	#plf.show()
+	print(tree_two.data,tree_two.depth)
 	#instance_one.figure_scatter(np_data_two[:,0],np_data_two[:,1])
 	########
 	
