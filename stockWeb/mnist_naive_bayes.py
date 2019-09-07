@@ -24,6 +24,19 @@ class NaiveBayes():
 		for i in range(x_array.shape[0]):
 			t[i,:]=x_array[i]
 		return t
+	
+	def calculate_probility(self,X):
+		m,n=np.shape(X)
+		for j in range(n):
+    			X_unique=np.unique(X[:,j])
+   	 		X_probility=[]
+    			for i in X_unique:
+        			idx=np.where(X[:,j]==i)
+        			num_idx=np.shape(idx)[1]
+        			print(num_idx)
+        			X_probility.append(1.0*num_idx/m)
+    			print(X_probility)
+    			print(X_unique)
 		
 	def Naive_Bayes_Calculate(self,X,Y):
 		#set paramter
