@@ -37,6 +37,22 @@ class NaiveBayes():
         			X_probility.append(1.0*num_idx/m)
     			print(X_probility)
     			print(X_unique)
+	def calculate_probility_Y(self,Y):
+		Y_unique=np.unique(Y)
+		Y_probility=[]
+		for i in Y_unique:
+			#print(np.where(b==i))
+			num=np.shape(np.where(Y==i))[1]
+			Y_probility.append(1.0*num/np.shape(Y)[0])
+		return [Y_unique,Y_probility]
+	def calculate_probility_X(self,Y):
+		Y_unique=np.unique(Y)
+		Y_probility=[]
+		for i in Y_unique:
+			#print(np.where(b==i))
+			num=np.shape(np.where(Y==i))[1]
+			Y_probility.append(1.0*num/np.shape(Y)[1])
+		return [Y_unique,Y_probility]
 		
 	def Naive_Bayes_Calculate(self,X,Y):
 		#set paramter
@@ -46,13 +62,14 @@ class NaiveBayes():
 		for i in Y_unique:
     			#print(np.where(b==i))
     			num=np.shape(np.where(Y==i))[1]
-    			print(num)
+    			#print(num)
     			Y_probility.append(1.0*num/np.shape(Y)[0])
-		print(Y_probility)
+		#print(Y_probility)
 		for j in Y_unique:
 			idx=np.where(Y==i)
 			for k in range(n):
-				x_k_unique=np.unique(X[idx,k]
+				#x_k_unique=np.unique(X[idx,k])
+				print(self.calculate_probility_X(X[idx,k]))
 		
 		
 			
