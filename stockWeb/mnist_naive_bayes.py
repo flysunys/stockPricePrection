@@ -54,7 +54,7 @@ class NaiveBayes():
 			Y_probility.append(1.0*num/np.shape(Y)[1])
 		return [Y_unique,Y_probility]
 		
-	def Naive_Bayes_Calculate(self,X,Y):
+	def Naive_Bayes_Calculate(self,X,Y,x_data):
 		#set paramter
 		m,n=np.shape(X)
 		Y_unique=np.unique(Y)
@@ -65,11 +65,29 @@ class NaiveBayes():
     			#print(num)
     			Y_probility.append(1.0*num/np.shape(Y)[0])
 		#print(Y_probility)
-		for j in Y_unique:
-			idx=np.where(Y==i)
+		x_data_probility=[]
+		#print(np.shape(Y_unique)[0])
+		for j in range(np.shape(Y_unique)[0]):
+			idx=np.where(Y==Y_unique[j])
+			each_Y_probility=[]
+			temp_x_data_probility=Y_probility[j]
 			for k in range(n):
 				#x_k_unique=np.unique(X[idx,k])
-				print(self.calculate_probility_X(X[idx,k]))
+				#print(self.calculate_probility_X(X[idx,k]))
+				each_Y_probility.append(self.calculate_probility_X(X[idx,k]))
+				x_k_probility=self.calculate_probility_X(X[idx,k])
+				idx_k=np.where(x_k_probility[0]==x_data[k])
+				#print(idx_k)
+				if idx_k[0].size:
+					temp_x_data_probility*=x_k_probility[1][idx_k[0][0]]
+				else:
+					temp_x_data_probility*=0
+			#print(each_Y_probility)
+			#print(temp_x_data_probility)
+			x_data_probility.append(temp_x_data_probility)
+		#print(x_data_probility)
+		return Y_unique[x_data_probility.index(max(x_data_probility))]
+		
 		
 		
 			
@@ -110,10 +128,14 @@ if __name__=='__main__':
 	#print(np_data_three)
 	#np_data_two=np_data_two.astype('float')
 	########instance to object
+	
+	############add test data
+	test_data=np.array([5,3,4,2])
 	instance_one=NaiveBayes()
-	instance_one.Naive_Bayes_Calculate(np_data_three[:,0:4],np_data_three[:,4])
+	most_probility_test_data=instance_one.Naive_Bayes_Calculate(np_data_three[:,0:4],np_data_three[:,4],test_data)
 	########set paramters
-	#使用测试数据测试普通的mnist
+	#result
+	print(most_probility_test_data)
 	
 	
 	
