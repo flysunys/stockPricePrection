@@ -15,6 +15,10 @@ import requests
 #from mnist_db import mnist_data  #对于同一目录下调用可以如此
 from DButils.mnist_database import mnist_data  #调用子目录下的python文件，需要加目录名称
 
+"""
+决策树常用的算法有id3，c4.5和cart算法，每种算法对于决策树的特征选择，决策树生成和剪枝的过程有所描述
+"""
+
 
 class DecisionTree():
 	def __init__(self):
@@ -54,7 +58,7 @@ class DecisionTree():
 			Y_probility.append(1.0*num/np.shape(Y)[1])
 		return [Y_unique,Y_probility]
 		
-	def Naive_Bayes_Calculate(self,X,Y,x_data):
+	def decisiontree_id3(self,X,Y,threshold):
 		#set paramter
 		m,n=np.shape(X)
 		Y_unique=np.unique(Y)
