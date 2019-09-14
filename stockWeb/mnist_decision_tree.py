@@ -1,8 +1,9 @@
 #coding:utf8
 
 #author:flysun
-#date:2019-09-01
-#description:knn的简单思想是在k类数据（已经分好的数据）中对于新的一个数据，计算这个数据与其他数据的距离，找出据此数据最近的k个点，然后使用投票的方式决定，该点属于哪一类
+#date:2019-09-14
+#description:决策树的简单思想是通过计算每个特征信息增益值，选取待分类的特征，递归循环，然后计算每类数据的
+#其他特征，直到没有可分的特征或者直到数据不可分为止
 
 import pandas as pd
 import numpy as np
