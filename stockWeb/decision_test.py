@@ -29,13 +29,13 @@ class DecisionTree():
         #df_Y=Y.groupby().size()
         #df_dict=df_Y.to_dict()
         df_list=df_Y.tolist()
-        print(df_list)
+        #print(df_list)
         shanno_Y=0
         #for key_Y,value_Y in df_dict:
         #    value_Y
         for value_Y in df_list:
             p_Y=1.0*float(value_Y)/num_Y
-            print(p_Y)
+            #print(p_Y)
             shanno_Y+=p_Y*math.log(p_Y,2)
         return -shanno_Y
     def get_columns_data(self,data):
@@ -60,7 +60,27 @@ class DecisionTree():
         for i,j in zip(p_d,h_d):
             shano_x+=i*j
         return shano_x
-        
+    def select_params(self,data):
+        params_list=self.get_columns_data(data)
+        shano_list=[]
+        for each_param in params_list[:-1]:
+            each_shano=self.calculate_shanno_X(data,each_param)
+            shano_list.append(each_shano)
+        #print(params_list)
+        #print(shano_list)
+        max_index_shano=shano_list.index(max(shano_list))
+        return params_list[max_index_shano]
+		
+    def select_recur_params(self,data):
+        original_params_list=self.get_columns_data(data)
+        original_params_list=original_params_list[:-1]
+        now_params_list=[]
+        while len(original_params_list)>0 && self.calculate_shanno_Y(data)<1:
+            param=self.select_params(data)
+			now_params_list.append(original_params_list.pop())
+            for groupname,grouplist in data.groupby([param]):
+                param=self.select_params(grouplist)
+      
             
         
         
@@ -82,5 +102,6 @@ if __name__=='__main__':
     print(H_D)
     age_shano=demo.calculate_shanno_X(df_demo,'age')
     print(age_shano)
-    
+    select=demo.select_params(df_demo)
+    print(select)
     #print(df_Y.tolist())
