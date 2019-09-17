@@ -88,7 +88,8 @@ class DecisionTree():
         original_params_list=self.get_columns_data(data)
         original_params_list=original_params_list[:-1]
 	target_list=data['income-class']
-        now_params_list=[]
+        print(len(original_params_list))
+	print(data.shape[1])
         if data.shape[1]==1:
             class_count = target_list.value_counts().to_dict()
             sorted_class_count = sorted(class_count.items(), key=lambda x:x[1], reverse=True)
@@ -96,12 +97,14 @@ class DecisionTree():
         if len(original_params_list)==0:
             return target_list[0]
         best_label = self.select_params(data)
+	print(best_label)
         subdata=self.split_dataset(data,best_label)
         best_label_levels = data[best_label].unique().tolist()
         tree = {best_label: {}}
         for each_data,level in zip(subdata,best_label_levels):
             tree[best_label][level] = self.select_recur_params(each_data)
-        return tree
+        print(tree)
+	return tree
       
             
         
@@ -110,20 +113,23 @@ class DecisionTree():
 if __name__=='__main__':
     demo=DecisionTree()
     df_demo=demo.get_data()
-    print(df_demo.columns.values.tolist())
+    #print(df_demo.columns.values.tolist())
     #print(df_demo['income-class'].count())
     #print(df_demo)
     #print(df_demo['age'])
-    df_Y=df_demo.groupby(['income-class']).size()
+    #df_Y=df_demo.groupby(['income-class']).size()
     #for groupname,grouplist in df_demo.groupby(['income-class']):
     #    print(groupname)
     #    print(grouplist)
     #print(dir(df_Y),type(df_Y),df_Y)
-    df_dict=df_Y.to_dict()
-    H_D=demo.calculate_shanno_Y(df_demo)
-    print(H_D)
-    age_shano=demo.calculate_shanno_X(df_demo,'age')
-    print(age_shano)
-    select=demo.select_params(df_demo)
-    print(select)
+    #df_dict=df_Y.to_dict()
+    #H_D=demo.calculate_shanno_Y(df_demo)
+    #print(H_D)
+    #age_shano=demo.calculate_shanno_X(df_demo,'age')
+    #print(age_shano)
+    #select=demo.select_params(df_demo)
+    #print(select)
     #print(df_Y.tolist())
+    dd=demo.fill_data(df_demo)
+    d_tree=demo.select_recur_params(dd)
+    print(d_tree)
