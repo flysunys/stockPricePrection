@@ -68,7 +68,7 @@ class DecisionTree():
     def select_params(self,data):
         params_list=self.get_columns_data(data)
         shano_list=[]
-	hd=self.calculate_shanno_Y(data)
+        hd=self.calculate_shanno_Y(data)
         for each_param in params_list[:-1]:
             each_shano=self.calculate_shanno_X(data,each_param)
             shano_list.append(hd-each_shano)
@@ -87,9 +87,9 @@ class DecisionTree():
     def select_recur_params(self,data):
         original_params_list=self.get_columns_data(data)
         original_params_list=original_params_list[:-1]
-	target_list=data['income-class']
+        target_list=data['income-class']
         print(len(original_params_list))
-	print(data.shape[1])
+        print(data.shape[1])
         if data.shape[1]==1:
             class_count = target_list.value_counts().to_dict()
             sorted_class_count = sorted(class_count.items(), key=lambda x:x[1], reverse=True)
@@ -97,14 +97,14 @@ class DecisionTree():
         if len(original_params_list)==0:
             return target_list[0]
         best_label = self.select_params(data)
-	print(best_label)
+        print(best_label)
         subdata=self.split_dataset(data,best_label)
         best_label_levels = data[best_label].unique().tolist()
         tree = {best_label: {}}
         for each_data,level in zip(subdata,best_label_levels):
             tree[best_label][level] = self.select_recur_params(each_data)
         print(tree)
-	return tree
+        return tree
       
             
         
