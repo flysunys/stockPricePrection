@@ -22,6 +22,11 @@ class DecisionTree():
                        'marital-status','occupation','relationship','race','sex','capital-gain','capital-loss',\
                        'hours-per-week','native-country','income-class'])
         return df
+    def fill_data(self,data):
+        remove_wen=data.replace(' ?',np.nan)
+        fill_na=remove_wen.fillna(method='ffill') #使用向后数据填充的方式
+        #fill_na=remove_wen.fillna(method='pad') #使用向前数据填充的方式
+        return fill_na
         
     def calculate_shanno_Y(self,Y):
         num_Y=Y['income-class'].count()
