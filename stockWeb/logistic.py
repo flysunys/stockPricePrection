@@ -126,7 +126,7 @@ class logistic_data():
 		#print(X.shape,Y.shape)
 		for j in range(3):
 			count_iter=0
-			theta=20*np.random.random((X.shape[1],1))
+			theta=0.2*np.random.random((X.shape[1],1))
 			for i in range(iters):
 				Y_estimates=np.dot(X,theta)
 				#print(Y_estimates*Y)
@@ -145,7 +145,7 @@ class logistic_data():
 		for j in range(3):
 			coef_data=theta_all[j]
 			#print(coef_data)
-			x_test=np.linspace(0,20,num=20)
+			x_test=np.linspace(0,8,num=20)
 			#plf.plot(x_test,(-coef_data[1,:]*x_test-coef_data[2,:]*(x_test**2)-coef_data[0,:])/coef_data[3,:])
 			plf.plot(x_test,(-coef_data[1,:]*x_test-coef_data[2,:]*(x_test**2)-coef_data[3,:]*(x_test**3)-coef_data[0,:])/coef_data[4,:])
 			#plf.plot(x_test,(-coef_data[1,:]*(1.0/x_test)-coef_data[2,:]*x_test-coef_data[3,:]*(x_test**2)-coef_data[0,:])/coef_data[4,:])
@@ -196,9 +196,9 @@ if __name__=='__main__':
 	########instance to object 
 	instance_one=logistic_data()
 	########set paramters
-	iters=5000
+	iters=50000
 	alpha=0.08
-	learningrate=1
+	learningrate=0.00005
 	#如果theta初始值的斜率是正，收敛出的也是正，如果是负，收敛出的也是负，因为这个数据的可分超平面太多了，明显的线性可分
 	#logistic 2 分类
 	logger=logging.getLogger()
