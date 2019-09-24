@@ -52,6 +52,12 @@ class svm_linear_kf_data():
 	def figure_scatter(self,x_data,y_data):
 		plf.scatter(x_data,y_data)
 		plf.show()
+	def svm_linear_kf(self,X,Y):
+		theta=6*np.random.random((X.shape[1]+1,1))
+		ones_data=np.zeros(X.shape[0])+1
+		X=np.insert(X,0,ones_data,axis=1)
+		alpha_params=np.zeros(X.shape[0])+1
+		
 	
 			
 def rebuild_features(features):
@@ -97,8 +103,8 @@ if __name__=='__main__':
 	train_features, test_features, train_labels, test_labels = train_test_split(
         np_data_two[:,0:2], instance_one.array_oneTotwo(np_data_two[:,2]), test_size=0.33, random_state=23323)
 	#print(train_features)
-	train_features = rebuild_features(train_features)
-	test_features = rebuild_features(test_features)
+	#train_features = rebuild_features(train_features)
+	#test_features = rebuild_features(test_features)
 	print('Start training')
 	time_2 = time.time()
 	met = svm_linear_kf_data()
