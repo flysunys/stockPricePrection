@@ -10,6 +10,8 @@ description:
 
 svm又叫最大间隔分类器，线性可分支持向量机
 
+使用smo算法解决线性可分数据
+
 """
 
 import pandas as pd
@@ -34,8 +36,13 @@ from DButils.mnist_database import mnist_data  #调用子目录下的python文�
 
 class svm_linear_kf_data():
 	def __init__(self):
-		self.c=0.01
-		self.alpha=0.2
+		self.C=0 #惩罚因子
+		self.tol=0 #容错率
+		self.b=0 #截距
+		self.kValue={} #设置核函数是线性的还是高斯的
+		self.maxIter=1000  #最大迭代次数
+		self.supportVectorIndex=[]  #支持向量的下标
+		self.supportVector=[]  #支持向量	
 	def array_oneTotwo(self,x_array):
 		t=np.empty((x_array.shape[0],1))
 		for i in range(x_array.shape[0]):
@@ -52,11 +59,33 @@ class svm_linear_kf_data():
 	def figure_scatter(self,x_data,y_data):
 		plf.scatter(x_data,y_data)
 		plf.show()
-	def svm_linear_kf(self,X,Y):
-		theta=6*np.random.random((X.shape[1]+1,1))
-		ones_data=np.zeros(X.shape[0])+1
-		X=np.insert(X,0,ones_data,axis=1)
-		alpha_params=np.zeros(X.shape[0])+1
+	def initparam(self,X,Y):
+		self.XData=X
+		self.YData=Y
+		m,n=np.shape(X)
+		self.m=m
+		self.n=n
+		self.alpha=np.zeros((self.m,1))
+		self.eCache=np.zeros((self.m,2))
+		self.K=np.zeros((self.m,self.m))
+		for i in range(self.m):
+			self.K[:,i]=self.kernels(self.XData,self.XData[i,:])
+	def kernels(self,XData,A):   #根据核的特性，计算核函数的第i列的所有值
+		m,n=np.shape(XData)
+		each_k=np.zeros((m,1))
+		if self.kValue.keys()[0]=='linear':  #如果是线性核，则使用线性核计算向量的内积
+			each_k=np.dot(XData,A.T)   #m*n维的XData和1*n维向量相乘，得到m个向量的内积组成的向量
+		elif self.kValue.keys()[0]=='gaussian':
+			for j in range(m):
+				delta=XData[j,:]-A
+				each_k[j]=np.dot(delta,delta.T)
+			each_k=np.exp(each_k/(-self.kValue['gaussian']**2))
+		else:
+			print("请输入合适的内核")
+			raise NameError('can not identify')
+		return each_k
+			
+		
 		
 	
 			
