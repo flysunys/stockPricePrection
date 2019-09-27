@@ -84,11 +84,99 @@ class svm_linear_kf_data():
 			print("请输入合适的内核")
 			raise NameError('can not identify')
 		return each_k
-			
-		
-		
+	def chooseJ(self,i,Ei):
+		maxK=-1;maxDelta=0;Ej=0
+		self.eCache[i]=[1,Ei]
+		validEcacheList=np.nonzero(self.eCache[:,0])[0]
+		if len(validEcacheList)>1:
+			for k in validEcacheList:
+				if k==i:continue
+				Ek=self.calcEk(k)
+				deltaE=np.abs(Ei-Ek)
+				if deltaE>maxDelta:
+					maxK=k;maxDelta=deltaE;Ej=Ek
+			return maxK,Ej
+		else:
+			j=self.randJ(i)
+			Ej=self.calcEk(j)
+			return j,Ej
+	def randJ(self,i):  #随机选取一个非i的整数（0，m-1）
+		j=i
+		while i==j:
+			j=int(np.random.rand()*self.m)
+		return j
+	def calcEk(self,k):
+		return float(np.dot((self.alpha*self.YData).T,self.K[:,k])+self.b)-float(self.YData[k])
+	def adjustAlpha(self,aj,H,L):   #调节拉格朗日乘子的大小
+		if aj>H:
+			aj=H
+		if L>aj:
+			aj=L
+		return aj
+	def train(self):
+		step=0
+		flag=True
+		alphaPairsChanged=0
+		while(step<self.maxIter) and (alphaPairsChanged>0) or (flag):
+			alphaPairsChanged=0
+			if flag:
+				for i in range(self.m):
+					alphaPairsChanged += self.innerLoop(i)
+				step += 1
+			else:
+				nonBoundls=np.nonzero((self.alpha>0)*(self.alpha<self.C))[0]
+				for i in nonBoundls:  #对非支持向量的点进行更新
+					alphaPairsChanged += self.innerLoop(i)
+				step += 1
+			if flag:
+				flag=False  #返回支持向量的索引和向量值
+			elif alphaPairsChanged==0:
+				flag=True
+		self.supportVectorIndex=np.nonzero(self.alpha>0)[0]
+		self.supportVector=self.XData[self.supportVectorIndex]
+		self.supportVectorLabel=self.YData[self.supportVectorIndex]
+	def innerLoop(self,i):
+		Ei=self.calcEk(i)
+		#判别公式,alpha中的取值在0，C之间并且误差大于容忍度
+		if ((self.YData[i]*Ei<-self.tol) and (self.alpha[i]<self.C)) or ((self.YData[i]*Ei>self.tol) and (self.alpha[i]>0)):
+			j,Ej=self.chooseJ(i,Ei)
+			alphaIold=self.alpha[i].copy()
+			alphaJold=self.alpha[j].copy()
+			if self.YData[i] != self.YData[j]:
+				L=max(0,self.alpha[j]-self.alpha[i])
+				H=min(self.C,self.C+self.alpha[j]-self.alpha[i])
+			else:
+				L=max(0,self.alpha[j]+self.alpha[i]-self.C)
+				H=min(self.C,self.alpha[j]+self.alpha[i])
+			if H==L:
+				return 0
+			W=self.K[i,i]+self.K[j,j]-2*self.K[i,j]
+			if W < 0:
+				return 0
+			self.alpha[j]=self.alpha[j]+self.YData[j]*(Ei-Ej)/W
+			self.alpha[j]=self.adjustAlpha(self.alpha[j],H,L)
+			self.eCache[j]=[1,self.calcEk(j)]
+			if np.abs(self.alpha[j]-alphaJold) < 0.00001:
+				return 0
+			self.alpha[i]=self.alpha[i]+self.YData[i]*self.YData[j]*(alphaJold-self.alpha[j])
+			self.eCache[i]=[1,self.calcEk(i)]
+			bi=-Ei-self.YData[i]*self.K[i,i]*(self.alpha[i]-alphaIold)-self.YData[j]*self.K[i,j]*(self.alpha[j]-alphaJold)+self.b
+			bj=-Ej-self.YData[i]*self.K[i,j]*(self.alpha[i]-alphaIold)-self.YData[j]*self.K[j,j]*(self.alpha[j]-alphaJold)+self.b
+			if self.alpha[i]>0 and self.alpha[i]<self.C:
+				self.b=bi
+			elif self.alpha[j]>0 and self.alpha[j]<self.C:
+				self.b=bj
+			else:
+				self.b=(bi+bj)/2.0
+			return 1
+		else:
+			return 0
+	def calcWeight(self):
+		self.Weight=np.zeros((self.n,1)).T
+		for index in self.supportVectorIndex:
+			self.Weight += self.alpha[index] * self.YData[index] * self.XData[index,:]
+				
 	
-			
 def rebuild_features(features):
 	"""
 	将原feature的（a0,a1,a2,a3,a4,...）
@@ -137,17 +225,22 @@ if __name__=='__main__':
 	print('Start training')
 	time_2 = time.time()
 	met = svm_linear_kf_data()
-	met.train(train_features, train_labels)
+	met.C=0.6
+	met.tol=0.001
+	met.maxIter=1000
+	met.kValue['linear']=1
+	met.initparam(train_features,train_labels)
+	met.train()
 
 	time_3 = time.time()
 	print('training cost ', time_3 - time_2, ' second', '\n')
-
+	met.calcWeight()
 	print('Start predicting')
-	test_predict = met.predict(test_features)
-	time_4 = time.time()
+	#test_predict = met.predict(test_features)
+	#time_4 = time.time()
 	print('predicting cost ', time_4 - time_3, ' second', '\n')
 
-	score = accuracy_score(met.array_twoToone(test_labels), test_predict)
+	#score = accuracy_score(met.array_twoToone(test_labels), test_predict)
 	print("The accruacy socre is ", score)
 	
 	
