@@ -73,9 +73,9 @@ class svm_linear_kf_data():
 	def kernels(self,XData,A):   #根据核的特性，计算核函数的第i列的所有值
 		m,n=np.shape(XData)
 		each_k=np.zeros((m,1))
-		if self.kValue.keys()[0]=='linear':  #如果是线性核，则使用线性核计算向量的内积
+		if list(self.kValue.keys())[0]=='linear':  #如果是线性核，则使用线性核计算向量的内积
 			each_k=np.dot(XData,A.T)   #m*n维的XData和1*n维向量相乘，得到m个向量的内积组成的向量
-		elif self.kValue.keys()[0]=='gaussian':
+		elif list(self.kValue.keys())[0]=='gaussian':
 			for j in range(m):
 				delta=XData[j,:]-A
 				each_k[j]=np.dot(delta,delta.T)
@@ -175,6 +175,21 @@ class svm_linear_kf_data():
 		self.Weight=np.zeros((self.n,1)).T
 		for index in self.supportVectorIndex:
 			self.Weight += self.alpha[index] * self.YData[index] * self.XData[index,:]
+	def split_line(self,x_data,y_data):
+		x_test=np.linspace(0,20,num=20)
+		plf.scatter(x_data,y_data)
+		plf.plot(x_test,(-self.Weight[:,0]*x_test-self.b[0])/self.Weight[:,1])
+		plf.show()
+		
+	def predict(self,test_one_x):
+		pre_y=np.dot(test_one_x,self.Weight.T)
+		index1=np.where(pre_y>=0)
+		index2=np.where(pre_y<0)
+		result_pre=np.zeros(np.shape(pre_y))
+		result_pre[index1]=1
+		result_pre[index2]=-1
+		return result_pre
+		
 				
 	
 def rebuild_features(features):
@@ -216,18 +231,19 @@ if __name__=='__main__':
 	#线性可分支持向量机 2 分类
 	logger=logging.getLogger()
 	logger.setLevel(logging.INFO)
+	met = svm_linear_kf_data()
 	#选取2/3为训练集。1/3为测试集
 	train_features, test_features, train_labels, test_labels = train_test_split(
-        np_data_two[:,0:2], instance_one.array_oneTotwo(np_data_two[:,2]), test_size=0.33, random_state=23323)
+        np_data_two[:,0:2], met.array_oneTotwo(np_data_two[:,2]), test_size=0.3, random_state=23323)
 	#print(train_features)
 	#train_features = rebuild_features(train_features)
 	#test_features = rebuild_features(test_features)
 	print('Start training')
 	time_2 = time.time()
-	met = svm_linear_kf_data()
-	met.C=0.6
+	#met = svm_linear_kf_data()
+	met.C=0.7
 	met.tol=0.001
-	met.maxIter=1000
+	met.maxIter=100
 	met.kValue['linear']=1
 	met.initparam(train_features,train_labels)
 	met.train()
@@ -236,11 +252,16 @@ if __name__=='__main__':
 	print('training cost ', time_3 - time_2, ' second', '\n')
 	met.calcWeight()
 	print('Start predicting')
-	#test_predict = met.predict(test_features)
-	#time_4 = time.time()
+	
+	print(met.Weight)
+	print(met.b)
+	
+	met.split_line(np_data_two[:,0],np_data_two[:,1])
+	test_predict = met.predict(test_features)
+	time_4 = time.time()
 	print('predicting cost ', time_4 - time_3, ' second', '\n')
 
-	#score = accuracy_score(met.array_twoToone(test_labels), test_predict)
+	score = accuracy_score(met.array_twoToone(test_labels), test_predict)
 	print("The accruacy socre is ", score)
 	
 	
