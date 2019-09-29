@@ -182,7 +182,7 @@ class svm_linear_kf_data():
 		plf.show()
 		
 	def predict(self,test_one_x):
-		pre_y=np.dot(test_one_x,self.Weight.T)
+		pre_y=np.dot(test_one_x,self.Weight.T)+self.b
 		index1=np.where(pre_y>=0)
 		index2=np.where(pre_y<0)
 		result_pre=np.zeros(np.shape(pre_y))
