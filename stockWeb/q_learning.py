@@ -46,6 +46,16 @@ Agent 使用  Q-learning 来寻宝
 
 智能体agent 在4X4的二维表格世界中寻找到宝藏。
 
+本例中所使用的Q_learning方法所属分类如下：
+
+基于模型的方法
+
+基于价值的方法
+
+单步更新的方法
+
+离线学习方法或者在线学习方法
+
 
 """
 
@@ -104,16 +114,16 @@ class GridEnviroment():
 		col=state['col']
 		next_state={'rol':rol,'col':col}
 		if action=='East':
-			rol+=1
-		if action=='West':
-			rol-=1
-		if action=='North':
-			col-=1
-		if action=='South':
 			col+=1
-		if rol < 0 or rol > self.n:
+		if action=='West':
+			col-=1
+		if action=='North':
+			rol-=1
+		if action=='South':
+			rol+=1
+		if rol < 0 or rol >= self.n:
 			return next_state
-		if col < 0 or col > self.n:
+		if col < 0 or col >= self.n:
 			return next_state
 		next_state['col']=col
 		next_state['rol']=rol
@@ -232,7 +242,7 @@ agent.gamma=0.2
 agent.init_q_value(env)
 env.init_env()
 
-max_episode=23
+max_episode=22
 
 for episode in range(max_episode):
 	agent.reset_state()
@@ -246,8 +256,9 @@ for episode in range(max_episode):
 		if done:
 			break
 			
-print(action_q_value)
+print(agent.q_value)
 env.window.mainloop()
+
 		
 		
 
