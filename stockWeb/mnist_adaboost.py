@@ -18,8 +18,8 @@ adaboost提升算法：
 
 import pandas as pd
 import numpy as np
-from sklearn.cross_validation import train_test_split
-from sklearn.metric import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plf
 import requests
 #from mnist_db import mnist_data  #对于同一目录下调用可以如此
@@ -122,7 +122,7 @@ class Sign():
 class adaboost_data():
 	def __init__(self):
 		pass
-	def __init_parameters_(self,features,labels):
+	def _init_parameters_(self,features,labels):
 		self.X = features   #训练集特征
 		self.Y = labels     #训练集标签
 		self.n = len(features[0])  #特征维度
@@ -151,7 +151,8 @@ class adaboost_data():
 			best_classifier = (100000,None,None)   #(误差率，针对的特征，分类器)
 			for i in range(self.n):
 				map_time -=time.time()
-				features = map(lambda x:x[i],self.X)
+				#features = map(lambda x:x[i],self.X)
+				features = self.X[:,i]
 				map_time +=time.time()
 				classifier = Sign(features,self.Y,self.w)
 				error_score = classifier.train()
@@ -231,20 +232,20 @@ if __name__=='__main__':
 	iters=500
 	alpha=0.1
 	learningrate=1
-	
+	ada = adaboost_data()
 	logger = logging.getLogger()
 	logger.setLevel(logging.DEBUG)
 	train_features, test_features, train_labels, test_labels = train_test_split(
-        np_data_two[:,0:2], met.array_oneTotwo(np_data_two[:,2]), test_size=0.3, random_state=23323)
-	train_labels = map(lambda x:2*x-1,train_labels)
-	ada = adaboost_data()
+        np_data_two[:,0:2], ada.array_oneTotwo(np_data_two[:,2]), test_size=0.3, random_state=23323)
+	#train_labels = map(lambda x:2*x-1,train_labels)
+	train_labels = 2*train_labels -1
+	
 	ada.train(train_features, train_labels)
 	test_predict = ada.predict(test_features)
-	test_labels = map(lambda x:2*x-1,test_labels)
-    score = accuracy_score(test_labels,test_predict)
-	#instance_one.perceptron_fit_pair(np_data_two[:,0],np_data_two[:,1],np_data_two[:,0:2],instance_one.array_oneTotwo(np_data_two[:,2]),iters,learningrate)
-	#instance_one.figure_scatter(np_data_two[:,0],np_data_two[:,1])
-	########
+	#test_labels = map(lambda x:2*x-1,test_labels)
+	test_labels = 2*test_labels-1
+	score = accuracy_score(test_labels,test_predict)
+	print("测试集的精确度是：%s" % score)
 	
 	
 
